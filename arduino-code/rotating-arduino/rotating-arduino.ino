@@ -64,6 +64,7 @@ void setup() {
 }
 
 void homing() {
+  homingCounter = 0;
   if (isHoming == LOW) {
     atHome = LOW;
     digitalWrite(DIRECTION_PIN, LOW); // go back to origin;
@@ -120,10 +121,12 @@ void loop() {
 
   if (homingCounter > homingCounterMax) {
     // restart homing:
-    int  isHoming = LOW;
-    int atHome = LOW;
-    int isCentered = LOW;
+    isHoming = LOW;
+    atHome = LOW;
+    isCentered = LOW;
     homingCounter = 0;
+    switchPos = 0;
+    counter = 0;
     digitalWrite(ENABLE_PIN, HIGH);
   }
 
