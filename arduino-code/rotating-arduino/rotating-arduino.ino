@@ -22,7 +22,7 @@ int maxCount = 50;
 int switchPos = 0;
 int eps = 100; // steps to wait to re-activate switch;
 
-int  isHoming = LOW;
+int isHoming = LOW;
 int atHome = LOW;
 int isCentered = LOW;
 
@@ -31,13 +31,24 @@ const int stepDurationMicroSec = 9000;
 volatile int stepperCounter = 0;
 // Motor is rotating for 5 minutes seconds and steady for 10 seconds
 int stepperCounterMax = 10; // seconds
-int stepperValues[] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+int stepperValues[] = {0, 1, 1, 1, 1, 1, 1};
+//int stepperValues[] = {0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 int stepperValueIndex = 0;
 
 int maxStepperIndex = (sizeof(stepperValues) / sizeof(stepperValues[0])) - 1;
 
-volatile int homingCounter = 0; // seconds
-int homingCounterMax = 1800; // seconds ==> recenter every half hour
+volatile int homingCounter = 0;
+int homingCounterMax = 300; // re-homing every 5 minutes
+
+void reset() {
+  homingCounter = 0;
+  counter = 0;
+  dir = 1;
+  switchPos = 0;
+  isHoming = LOW;
+  atHome = LOW;
+  isCentered = LOW;
+}
 
 void setup() {
   cli();//stop interrupts
@@ -48,7 +59,6 @@ void setup() {
   pinMode(LIMIT_SWITCH_PIN, INPUT_PULLUP);
 
   //  Serial.begin(9600);
-  isHoming = LOW;
 
   //set timer1 interrupt at 1Hz
   TCCR1A = 0;// set entire TCCR1A register to 0
@@ -120,14 +130,7 @@ void homing() {
 void loop() {
 
   if (homingCounter > homingCounterMax) {
-    // restart homing:
-    isHoming = LOW;
-    atHome = LOW;
-    isCentered = LOW;
-    homingCounter = 0;
-    switchPos = 0;
-    counter = 0;
-    digitalWrite(ENABLE_PIN, HIGH);
+    reset();
   }
 
   //  Serial.println(counter);
@@ -175,8 +178,6 @@ void loop() {
     }
     else {
       digitalWrite(ENABLE_PIN, LOW);
-      digitalWrite(STEP_PIN, LOW);
-      digitalWrite(DIRECTION_PIN, LOW);
     }
 
   }

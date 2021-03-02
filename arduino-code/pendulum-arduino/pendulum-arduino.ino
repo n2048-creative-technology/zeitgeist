@@ -3,7 +3,7 @@
 #define DIRECTION_PIN 2
 #define STEP_PIN 3
 #define ENABLE_PIN 4
-#define MIRROR_PIN = 6;
+#define MIRROR_PIN 6
 
 volatile int pendulumCounter = 0;
 // Motor is rotating for 60 seconds and steady for 10

@@ -29,7 +29,6 @@ void setup() {
 //  Serial.begin(9600);
 
   pinMode(VORTEX_PIN, OUTPUT);  
-  pinMode(ENABLE_PIN, OUTPUT);
   mirrorServo.attach(MIRROR_PIN);  // attaches the servo on pin 9 to the servo object
 
 
