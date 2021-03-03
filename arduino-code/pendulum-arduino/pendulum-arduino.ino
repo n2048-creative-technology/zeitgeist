@@ -13,8 +13,10 @@ int pendulumValueIndex = 0;
 
 ServoTimer2 mirrorServo;
 volatile int mirrorCounter = 0;
-int mirrorCounterMax = 5; // seconds
-int mirrorValues[] = {0, 180}; // ~degrees // CHANGE THIS VALUES IN PLACE
+
+int mirrorValues[] = {85, 120}; // ~degrees // CHANGE THIS VALUES IN PLACE
+int mirrorTimes[] = {10, 30}; // seconds // rotate
+
 int mirrorValueIndex = 0;
 
 int maxPendulumIndex = (sizeof(pendulumValues) / sizeof(pendulumValues[0])) - 1;
@@ -55,7 +57,7 @@ void loop() {
 
   // Mirror Update:
 
-  if (mirrorCounter > mirrorCounterMax) {
+  if (mirrorCounter > mirrorTimes[mirrorValueIndex]) {
     mirrorCounter = 0;
     mirrorValueIndex += 1;
     if (mirrorValueIndex > maxMirrorIndex) {
@@ -63,9 +65,14 @@ void loop() {
     }
   }
 
-  int mirrorPos = map(mirrorValues[mirrorValueIndex], 0, 180, 750, 2250);
-  mirrorServo.write(mirrorPos);
+  int targetMirrorPos = map(mirrorValues[mirrorValueIndex], 0, 180, 750, 2250);
+  float currMirrorPos = mirrorServo.read();
 
+  while (targetMirrorPos != currMirrorPos) {
+    currMirrorPos += abs(targetMirrorPos - currMirrorPos) / (targetMirrorPos - currMirrorPos);
+    mirrorServo.write(int(currMirrorPos));
+    delay(4);
+  }
 
   // Pendulum Update:
 
