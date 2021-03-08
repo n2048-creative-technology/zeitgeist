@@ -4,11 +4,17 @@
 #define STEP_PIN 3
 #define ENABLE_PIN 4
 #define MIRROR_PIN 6
+#define LIMIT_SWITCH_PIN 7
+
+int pendulumStepCounter = 0;
+int pendulumStepCounterMax = 800;
+
 
 volatile int pendulumCounter = 0;
 // Motor is rotating for 60 seconds and steady for 10
 int pendulumCounterMax = 10; // seconds
-int pendulumValues[] = {0, 1, 1, 1, 1, 1, 1};
+int pendulumValues[] = {1, 0};
+int pendulumValueCounters[] = {60, 10};
 int pendulumValueIndex = 0;
 
 ServoTimer2 mirrorServo;
@@ -23,7 +29,7 @@ int maxPendulumIndex = (sizeof(pendulumValues) / sizeof(pendulumValues[0])) - 1;
 int maxMirrorIndex = (sizeof(mirrorValues) / sizeof(mirrorValues[0])) - 1;
 
 int dir = 1;
-const int stepDurationMicroSec = 9000;
+const int stepDurationMicroSec = 6000;
 
 void setup() {
   cli();//stop interrupts
@@ -32,13 +38,14 @@ void setup() {
   pinMode(STEP_PIN, OUTPUT);
   pinMode(ENABLE_PIN, OUTPUT);
   pinMode(DIRECTION_PIN, OUTPUT);
+  pinMode(LIMIT_SWITCH_PIN, INPUT_PULLUP);
 
   mirrorServo.attach(MIRROR_PIN);  // attaches the servo on pin 9 to the servo object
 
   digitalWrite(DIRECTION_PIN, LOW);
-  digitalWrite(ENABLE_PIN, LOW);
+  digitalWrite(ENABLE_PIN, HIGH);
 
-  //  Serial.begin(9600);
+    Serial.begin(9600);
 
   //set timer1 interrupt at 1Hz
   TCCR1A = 0;// set entire TCCR1A register to 0
@@ -54,6 +61,18 @@ void setup() {
 }
 
 void loop() {
+
+  int switchState = digitalRead(LIMIT_SWITCH_PIN);
+
+  Serial.println(switchState);
+  
+  if (switchState) {
+    digitalWrite(DIRECTION_PIN, HIGH);
+    pendulumStepCounter = 0;
+  }
+  else if (pendulumStepCounter > pendulumStepCounterMax) {
+    digitalWrite(DIRECTION_PIN, LOW);
+  }
 
   // Mirror Update:
 
@@ -76,7 +95,7 @@ void loop() {
 
   // Pendulum Update:
 
-  if (pendulumCounter > pendulumCounterMax) {
+  if (pendulumCounter > pendulumValueCounters[pendulumValueIndex]) {
     pendulumCounter  = 0;
     pendulumValueIndex += 1;
 
@@ -87,14 +106,15 @@ void loop() {
 
   bool pendulumOn = pendulumValues[pendulumValueIndex] > 0;
   if (pendulumOn) {
-    digitalWrite(ENABLE_PIN, HIGH);
+    digitalWrite(ENABLE_PIN, LOW);
     digitalWrite(STEP_PIN, HIGH);
     delayMicroseconds(stepDurationMicroSec);
     digitalWrite(STEP_PIN, LOW);
     delayMicroseconds(stepDurationMicroSec);
+    pendulumStepCounter ++;
   }
   else {
-    digitalWrite(ENABLE_PIN, LOW);
+    digitalWrite(ENABLE_PIN, HIGH);
     digitalWrite(STEP_PIN, LOW);
   }
 

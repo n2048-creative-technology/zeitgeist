@@ -9,8 +9,12 @@ int vortexValues[] = {100, 100, 100, 100, 100, 100, 0}; // %
 //95 -> canvas
 //120 -> center
 
-int mirrorValues[] = {85, 120}; // ~degrees // CHANGE THIS VALUES IN PLACE
-int mirrorTimes[] = {10, 30}; // seconds // rotate
+
+int mirrorValues[] = {103}; // ~degrees // CHANGE THIS VALUES IN PLACE
+int mirrorTimes[] = {10}; // seconds // rotate
+
+//int mirrorValues[] = {85, 120}; // ~degrees // CHANGE THIS VALUES IN PLACE
+//int mirrorTimes[] = {60, 10}; // seconds // rotate
 
 ServoTimer2 mirrorServo;
 

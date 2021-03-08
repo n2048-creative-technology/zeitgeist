@@ -26,7 +26,8 @@ int isHoming = LOW;
 int atHome = LOW;
 int isCentered = LOW;
 
-const int stepDurationMicroSec = 9000;
+//const int stepDurationMicroSec = 6000;
+const int stepDurationMicroSec = 4000;
 
 volatile int stepperCounter = 0;
 // Motor is rotating for 5 minutes seconds and steady for 10 seconds
