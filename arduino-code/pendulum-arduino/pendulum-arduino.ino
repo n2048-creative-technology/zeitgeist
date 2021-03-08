@@ -29,7 +29,7 @@ int maxPendulumIndex = (sizeof(pendulumValues) / sizeof(pendulumValues[0])) - 1;
 int maxMirrorIndex = (sizeof(mirrorValues) / sizeof(mirrorValues[0])) - 1;
 
 int dir = 1;
-const int stepDurationMicroSec = 6000;
+const int stepDurationMicroSec = 500;
 
 void setup() {
   cli();//stop interrupts
